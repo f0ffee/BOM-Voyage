@@ -1,0 +1,5 @@
+*.app
+*.g.xlf
+.alpackages/
+.snapshots/
+.vscode/*

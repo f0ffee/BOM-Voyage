@@ -1,0 +1,37 @@
+{
+    "id": "f3a1b2c4-d5e6-4f78-9abc-def012345678",
+    "name": "BOM Voyage",
+    "publisher": "f0ffee.dev",
+    "version": "1.0.0.0",
+    "brief": "Interactive BOM diagrams for Production and Assembly BOMs",
+    "description": "BOM Voyage takes you on a journey through your Production and Assembly BOMs with interactive, multi-level diagrams rendered through a Control Add-in. Pluggable rendering engines (Cytoscape.js, Mermaid.js) — extensible by other apps via the BOM Diagram Renderer interface.",
+    "privacyStatement": "",
+    "EULA": "",
+    "help": "",
+    "url": "",
+    "logo": "logo.png",
+    "dependencies": [
+        {
+            "id": "437dbf0e-84ff-417a-965d-ed2bb9650972",
+            "publisher": "Microsoft",
+            "name": "Base Application",
+            "version": "28.0.0.0"
+        }
+    ],
+    "screenshots": [],
+    "platform": "28.0.0.0",
+    "application": "28.0.0.0",
+    "idRanges": [
+        {
+            "from": 50100,
+            "to": 50149
+        }
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "runtime": "17.0",
+    "target": "Cloud"
+}

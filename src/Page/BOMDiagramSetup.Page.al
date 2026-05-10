@@ -1,8 +1,8 @@
-page 50102 "BOM Diagram Setup"
+page 50102 "BOM Voyage Setup"
 {
-    Caption = 'BOM Diagram Setup';
+    Caption = 'BOM Voyage Setup';
     PageType = Card;
-    SourceTable = "BOM Diagram Setup";
+    SourceTable = "BOM Voyage Setup";
     UsageCategory = Administration;
     ApplicationArea = All;
     InsertAllowed = false;

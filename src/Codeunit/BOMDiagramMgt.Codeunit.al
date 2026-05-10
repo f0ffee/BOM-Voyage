@@ -28,7 +28,7 @@ codeunit 50100 "BOM Diagram Mgt."
 
     local procedure GetRenderer(): Interface "BOM Diagram Renderer"
     var
-        Setup: Record "BOM Diagram Setup";
+        Setup: Record "BOM Voyage Setup";
     begin
         Setup.GetSetup();
         exit(Setup."Diagram Library");

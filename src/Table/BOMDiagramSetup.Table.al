@@ -1,6 +1,6 @@
-table 50100 "BOM Diagram Setup"
+table 50100 "BOM Voyage Setup"
 {
-    Caption = 'BOM Diagram Setup';
+    Caption = 'BOM Voyage Setup';
     DataClassification = CustomerContent;
 
     fields

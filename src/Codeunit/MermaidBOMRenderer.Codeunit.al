@@ -195,7 +195,7 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
 
     local procedure InitMaxDepth()
     var
-        Setup: Record "BOM Diagram Setup";
+        Setup: Record "BOM Voyage Setup";
     begin
         Setup.GetSetup();
         MaxDepth := Setup."Max Depth";

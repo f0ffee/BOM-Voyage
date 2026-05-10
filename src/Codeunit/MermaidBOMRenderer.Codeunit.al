@@ -26,7 +26,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
 
         if not ProdBOMHeader.Get(ProdBOMNo) then begin
             EmitNode(Diagram, 'N1', ProdBOMNotFoundLbl, '', 'root');
-            EmitClassDefs(Diagram);
             exit(Diagram.ToText());
         end;
 
@@ -36,7 +35,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         TraverseProductionBOM(Diagram, ProdBOMNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
 
-        EmitClassDefs(Diagram);
         exit(Diagram.ToText());
     end;
 
@@ -126,7 +124,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
 
         if not Item.Get(ItemNo) then begin
             EmitNode(Diagram, 'N1', ItemNotFoundLbl, '', 'root');
-            EmitClassDefs(Diagram);
             exit(Diagram.ToText());
         end;
 
@@ -136,7 +133,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         TraverseAssemblyBOM(Diagram, ItemNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
 
-        EmitClassDefs(Diagram);
         exit(Diagram.ToText());
     end;
 
@@ -213,54 +209,50 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
     end;
 
     /// <summary>
-    /// Emits one node line with `:::class` shorthand and a `click` handler bound to
-    /// the global JS bridge `onNodeClick(code, type)`. Cycle and root nodes do not
-    /// receive a click handler. Codes with embedded quotes are sanitised so the
-    /// generated `click N5 call onNodeClick("...")` parses cleanly.
+    /// Emits one node line with inline `style` and a `click` handler bound to the
+    /// global JS bridge `onNodeClick(code, type)`. The inline style form (rather
+    /// than `:::class` shorthand against a top-level classDef block) is used
+    /// because Mermaid 11 does not propagate classDef `color:` through htmlLabels,
+    /// leaving labels white-on-white. Inline `style ID color:...` does propagate.
+    /// Cycle and root nodes do not receive a click handler.
     /// </summary>
     local procedure EmitNode(var Diagram: TextBuilder; NodeId: Text; NodeLabel: Text; NodeCode: Text; NodeType: Text)
-    var
-        ClassName: Text;
     begin
-        ClassName := ClassNameFor(NodeType);
-        Diagram.AppendLine('    ' + NodeId + '["' + Esc(NodeLabel) + '"]:::' + ClassName);
+        Diagram.AppendLine('    ' + NodeId + '["' + Esc(NodeLabel) + '"]');
+        Diagram.AppendLine('    style ' + NodeId + ' ' + StyleFor(NodeType));
         if (NodeType <> 'root') and (NodeType <> 'cycle') and (NodeCode <> '') then
             Diagram.AppendLine('    click ' + NodeId + ' call onNodeClick("' + EscArg(NodeCode) + '", "' + NodeType + '")');
     end;
 
+    /// <summary>
+    /// Emits an edge with optional label. Uses the `A -- "text" --> B` form
+    /// because Mermaid 11 reliably renders edge labels in this syntax, while
+    /// `A -->|text| B` and `A -->|"text"| B` both have rendering bugs with
+    /// htmlLabels=true (label silently disappears).
+    /// </summary>
     local procedure EmitEdge(var Diagram: TextBuilder; ParentNodeId: Text; ChildNodeId: Text; EdgeLabel: Text)
     begin
         if EdgeLabel = '' then
             Diagram.AppendLine('    ' + ParentNodeId + ' --> ' + ChildNodeId)
         else
-            Diagram.AppendLine('    ' + ParentNodeId + ' -->|"' + Esc(EdgeLabel) + '"| ' + ChildNodeId);
+            Diagram.AppendLine('    ' + ParentNodeId + ' -- "' + Esc(EdgeLabel) + '" --> ' + ChildNodeId);
     end;
 
-    local procedure EmitClassDefs(var Diagram: TextBuilder)
-    begin
-        Diagram.AppendLine('    classDef root fill:#004578,color:#fff,stroke:#002b50,stroke-width:2px;');
-        Diagram.AppendLine('    classDef subItem fill:#0078d4,color:#fff,stroke:#005a9e,stroke-width:2px;');
-        Diagram.AppendLine('    classDef subBom fill:#ff8c00,color:#fff,stroke:#c75300,stroke-width:2px;');
-        Diagram.AppendLine('    classDef item fill:#fff,color:#323130,stroke:#c7e0f4,stroke-width:2px;');
-        Diagram.AppendLine('    classDef resource fill:#f3f2f1,color:#605e5c,stroke:#a19f9d,stroke-width:2px;');
-        Diagram.AppendLine('    classDef cycle fill:#fde7e9,color:#a4262c,stroke:#c50f1f,stroke-width:3px,stroke-dasharray:5 5;');
-    end;
-
-    local procedure ClassNameFor(NodeType: Text): Text
+    local procedure StyleFor(NodeType: Text): Text
     begin
         case NodeType of
             'root':
-                exit('root');
+                exit('fill:#004578,color:#fff,stroke:#002b50,stroke-width:2px');
             'subassembly-item':
-                exit('subItem');
+                exit('fill:#0078d4,color:#fff,stroke:#005a9e,stroke-width:2px');
             'subassembly-bom':
-                exit('subBom');
+                exit('fill:#ff8c00,color:#fff,stroke:#c75300,stroke-width:2px');
             'resource':
-                exit('resource');
+                exit('fill:#f3f2f1,color:#605e5c,stroke:#a19f9d,stroke-width:2px');
             'cycle':
-                exit('cycle');
+                exit('fill:#fde7e9,color:#a4262c,stroke:#c50f1f,stroke-width:3px,stroke-dasharray:5 5');
             else
-                exit('item');
+                exit('fill:#fff,color:#323130,stroke:#c7e0f4,stroke-width:2px');
         end;
     end;
 

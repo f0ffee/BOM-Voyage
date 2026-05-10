@@ -121,6 +121,8 @@ var MermaidRenderer = (function () {
             mermaid.render(diagramId, mermaidText).then(function (result) {
                 if (thisRender !== renderCount) return;
                 canvas.innerHTML = result.svg;
+                if (typeof result.bindFunctions === "function")
+                    result.bindFunctions(canvas);
                 setTimeout(function () {
                     if (thisRender === renderCount) MermaidRenderer.fit();
                 }, 120);

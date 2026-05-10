@@ -9,26 +9,26 @@ codeunit 50103 "BOM Diagram Navigation"
         Item: Record Item;
         Resource: Record Resource;
         ProdBOMHeader: Record "Production BOM Header";
-        Code20: Code[20];
+        RecordKey: Code[20];
     begin
         if NodeCode = '' then
             exit(false);
 
-        Code20 := CopyStr(NodeCode, 1, MaxStrLen(Code20));
+        RecordKey := CopyStr(NodeCode, 1, MaxStrLen(RecordKey));
 
         case NodeType of
             'item', 'subassembly-item':
-                if Item.Get(Code20) then begin
+                if Item.Get(RecordKey) then begin
                     Page.Run(Page::"Item Card", Item);
                     exit(true);
                 end;
             'subassembly-bom':
-                if ProdBOMHeader.Get(Code20) then begin
+                if ProdBOMHeader.Get(RecordKey) then begin
                     Page.Run(Page::"Production BOM", ProdBOMHeader);
                     exit(true);
                 end;
             'resource':
-                if Resource.Get(Code20) then begin
+                if Resource.Get(RecordKey) then begin
                     Page.Run(Page::"Resource Card", Resource);
                     exit(true);
                 end;
@@ -37,24 +37,29 @@ codeunit 50103 "BOM Diagram Navigation"
     end;
 
     /// <summary>
-    /// Opens the where-used list for a clicked diagram node.
-    /// Currently only Items have a built-in where-used view; resources and BOMs
-    /// fall back to false so the caller can show a friendly message.
+    /// Opens the standard BC "Prod. BOM Where-Used" page (99000811) for the
+    /// clicked item. That page handles its own filtering via SetItem and is the
+    /// purpose-built view for this question.
+    ///
+    /// Resources and BOM nodes have no where-used view today; we return false so
+    /// the caller can surface a friendly message instead of opening an empty page.
     /// </summary>
     procedure OpenWhereUsed(NodeCode: Text; NodeType: Text): Boolean
     var
         Item: Record Item;
-        Code20: Code[20];
+        ProdBOMWhereUsed: Page "Prod. BOM Where-Used";
+        RecordKey: Code[20];
     begin
         if NodeCode = '' then
             exit(false);
 
-        Code20 := CopyStr(NodeCode, 1, MaxStrLen(Code20));
+        RecordKey := CopyStr(NodeCode, 1, MaxStrLen(RecordKey));
 
         case NodeType of
             'item', 'subassembly-item':
-                if Item.Get(Code20) then begin
-                    Page.Run(Page::"Where-Used List", Item);
+                if Item.Get(RecordKey) then begin
+                    ProdBOMWhereUsed.SetItem(Item, WorkDate());
+                    ProdBOMWhereUsed.Run();
                     exit(true);
                 end;
         end;

@@ -22,6 +22,8 @@ controladdin BOMDiagramControl
 
     event OnControlReady();
     event OnDiagramError(ErrorMessage: Text);
+    event OnNodeClick(NodeCode: Text; NodeType: Text);
+    event OnNodeAction(NodeCode: Text; NodeType: Text; ActionCode: Text);
 
     procedure RenderDiagram(LibraryName: Text; DiagramData: Text);
 }

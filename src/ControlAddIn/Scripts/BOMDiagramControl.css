@@ -104,6 +104,46 @@
     display: inline-block;
 }
 
+/* ---- Cytoscape context menu ---- */
+
+.cy-ctx-menu {
+    position: fixed;
+    z-index: 10000;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #c8c6c4;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+}
+
+.cy-ctx-item {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 6px 14px;
+    color: #323130;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.cy-ctx-item:hover,
+.cy-ctx-item:focus {
+    background: #deecf9;
+    outline: none;
+}
+
+.cy-ctx-sep {
+    height: 1px;
+    background: #edebe9;
+    margin: 4px 0;
+}
+
 /* ---- Shared states ---- */
 
 .loading {

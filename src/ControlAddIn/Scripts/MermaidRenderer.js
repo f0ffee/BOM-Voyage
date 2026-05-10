@@ -2,6 +2,17 @@
 //  MermaidRenderer — Mermaid.js rendering engine with pan & zoom
 // ============================================================
 
+// Global bridge for Mermaid `click N5 call onNodeClick("CODE", "type")` directives
+// emitted by the AL Mermaid BOM renderer. Mermaid resolves callbacks against
+// `window`, so this must live at module scope. Forwards to the BC control add-in
+// event OnNodeClick(NodeCode, NodeType).
+window.onNodeClick = function (nodeCode, nodeType) {
+    try {
+        Microsoft.Dynamics.NAV.InvokeExtensibilityMethod(
+            "OnNodeClick", [String(nodeCode || ""), String(nodeType || "")]);
+    } catch (e) { /* outside BC harness (e.g. unit test) */ }
+};
+
 var MermaidRenderer = (function () {
     var initialized = false;
     var renderCount = 0;

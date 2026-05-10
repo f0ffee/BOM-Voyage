@@ -10,6 +10,7 @@ permissionset 50100 "BOM Voyage"
         page "Production BOM Diagram" = X,
         page "BOM Diagram Setup" = X,
         codeunit "BOM Diagram Mgt." = X,
+        codeunit "BOM Diagram Navigation" = X,
         codeunit "Cytoscape BOM Renderer" = X,
         codeunit "Mermaid BOM Renderer" = X;
 }

@@ -22,12 +22,12 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
         InitMaxDepth();
 
         if not ProdBOMHeader.Get(ProdBOMNo) then begin
-            AddNode(Nodes, 'N1', ProdBOMNotFoundLbl, Format(ProdBOMNo), 'root', '', '');
+            AddNode(Nodes, 'N1', ProdBOMNotFoundLbl, Format(ProdBOMNo), 'root');
             exit(BuildJson(Nodes, Edges));
         end;
 
         NodeCounter := 1;
-        AddNode(Nodes, 'N1', ProdBOMHeader.Description, Format(ProdBOMNo), 'root', '', '');
+        AddNode(Nodes, 'N1', ProdBOMHeader.Description, Format(ProdBOMNo), 'root');
         Path.Add(ProdBOMNo);
         TraverseProductionBOM(Nodes, Edges, ProdBOMNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
@@ -69,21 +69,21 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
                             if Item.Get(ProdBOMLine."No.") and (Item."Production BOM No." <> '') then begin
                                 TargetBOMNo := Item."Production BOM No.";
                                 if Path.Contains(TargetBOMNo) then begin
-                                    AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), ProdBOMLine."No.", 'cycle',
+                                    AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), ProdBOMLine."No.", 'cycle');
+                                    AddEdge(Edges, ParentNodeId, ChildNodeId,
                                         Format(ProdBOMLine."Quantity per"), Format(ProdBOMLine."Unit of Measure Code"));
-                                    AddEdge(Edges, ParentNodeId, ChildNodeId);
                                 end else begin
-                                    AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'subassembly',
+                                    AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'subassembly-item');
+                                    AddEdge(Edges, ParentNodeId, ChildNodeId,
                                         Format(ProdBOMLine."Quantity per"), Format(ProdBOMLine."Unit of Measure Code"));
-                                    AddEdge(Edges, ParentNodeId, ChildNodeId);
                                     Path.Add(TargetBOMNo);
                                     TraverseProductionBOM(Nodes, Edges, TargetBOMNo, ChildNodeId, NodeCounter, Depth + 1, Path);
                                     Path.RemoveAt(Path.Count);
                                 end;
                             end else begin
-                                AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'item',
+                                AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'item');
+                                AddEdge(Edges, ParentNodeId, ChildNodeId,
                                     Format(ProdBOMLine."Quantity per"), Format(ProdBOMLine."Unit of Measure Code"));
-                                AddEdge(Edges, ParentNodeId, ChildNodeId);
                             end;
                         end;
                     ProdBOMLine.Type::"Production BOM":
@@ -95,13 +95,13 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
 
                             TargetBOMNo := ProdBOMLine."No.";
                             if Path.Contains(TargetBOMNo) then begin
-                                AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), ProdBOMLine."No.", 'cycle',
+                                AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), ProdBOMLine."No.", 'cycle');
+                                AddEdge(Edges, ParentNodeId, ChildNodeId,
                                     Format(ProdBOMLine."Quantity per"), Format(ProdBOMLine."Unit of Measure Code"));
-                                AddEdge(Edges, ParentNodeId, ChildNodeId);
                             end else begin
-                                AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'subassembly',
+                                AddNode(Nodes, ChildNodeId, NodeLabel, ProdBOMLine."No.", 'subassembly-bom');
+                                AddEdge(Edges, ParentNodeId, ChildNodeId,
                                     Format(ProdBOMLine."Quantity per"), Format(ProdBOMLine."Unit of Measure Code"));
-                                AddEdge(Edges, ParentNodeId, ChildNodeId);
                                 Path.Add(TargetBOMNo);
                                 TraverseProductionBOM(Nodes, Edges, TargetBOMNo, ChildNodeId, NodeCounter, Depth + 1, Path);
                                 Path.RemoveAt(Path.Count);
@@ -122,12 +122,12 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
         InitMaxDepth();
 
         if not Item.Get(ItemNo) then begin
-            AddNode(Nodes, 'N1', ItemNotFoundLbl, Format(ItemNo), 'root', '', '');
+            AddNode(Nodes, 'N1', ItemNotFoundLbl, Format(ItemNo), 'root');
             exit(BuildJson(Nodes, Edges));
         end;
 
         NodeCounter := 1;
-        AddNode(Nodes, 'N1', Item.Description, Format(ItemNo), 'root', '', '');
+        AddNode(Nodes, 'N1', Item.Description, Format(ItemNo), 'root');
         Path.Add(ItemNo);
         TraverseAssemblyBOM(Nodes, Edges, ItemNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
@@ -162,21 +162,21 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
                             BOMComponentChild.SetRange("Parent Item No.", BOMComponent."No.");
                             if not BOMComponentChild.IsEmpty() then begin
                                 if Path.Contains(BOMComponent."No.") then begin
-                                    AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), BOMComponent."No.", 'cycle',
+                                    AddNode(Nodes, ChildNodeId, StrSubstNo(CycleLbl, NodeLabel), BOMComponent."No.", 'cycle');
+                                    AddEdge(Edges, ParentNodeId, ChildNodeId,
                                         Format(BOMComponent."Quantity per"), Format(BOMComponent."Unit of Measure Code"));
-                                    AddEdge(Edges, ParentNodeId, ChildNodeId);
                                 end else begin
-                                    AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'subassembly',
+                                    AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'subassembly-item');
+                                    AddEdge(Edges, ParentNodeId, ChildNodeId,
                                         Format(BOMComponent."Quantity per"), Format(BOMComponent."Unit of Measure Code"));
-                                    AddEdge(Edges, ParentNodeId, ChildNodeId);
                                     Path.Add(BOMComponent."No.");
                                     TraverseAssemblyBOM(Nodes, Edges, BOMComponent."No.", ChildNodeId, NodeCounter, Depth + 1, Path);
                                     Path.RemoveAt(Path.Count);
                                 end;
                             end else begin
-                                AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'item',
+                                AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'item');
+                                AddEdge(Edges, ParentNodeId, ChildNodeId,
                                     Format(BOMComponent."Quantity per"), Format(BOMComponent."Unit of Measure Code"));
-                                AddEdge(Edges, ParentNodeId, ChildNodeId);
                             end;
                         end;
                     BOMComponent.Type::Resource:
@@ -186,9 +186,9 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
                             else
                                 NodeLabel := BOMComponent."No.";
 
-                            AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'resource',
+                            AddNode(Nodes, ChildNodeId, NodeLabel, BOMComponent."No.", 'resource');
+                            AddEdge(Edges, ParentNodeId, ChildNodeId,
                                 Format(BOMComponent."Quantity per"), Format(BOMComponent."Unit of Measure Code"));
-                            AddEdge(Edges, ParentNodeId, ChildNodeId);
                         end;
                 end;
             until BOMComponent.Next() = 0;
@@ -202,7 +202,7 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
         MaxDepth := Setup."Max Depth";
     end;
 
-    local procedure AddNode(var Nodes: JsonArray; NodeId: Text; NodeLabel: Text; NodeCode: Text; NodeType: Text; Qty: Text; UoM: Text)
+    local procedure AddNode(var Nodes: JsonArray; NodeId: Text; NodeLabel: Text; NodeCode: Text; NodeType: Text)
     var
         Node: JsonObject;
     begin
@@ -210,19 +210,19 @@ codeunit 50101 "Cytoscape BOM Renderer" implements "BOM Diagram Renderer"
         Node.Add('label', NodeLabel);
         Node.Add('code', NodeCode);
         Node.Add('type', NodeType);
-        if Qty <> '' then
-            Node.Add('qty', Qty);
-        if UoM <> '' then
-            Node.Add('uom', UoM);
         Nodes.Add(Node);
     end;
 
-    local procedure AddEdge(var Edges: JsonArray; SourceId: Text; TargetId: Text)
+    local procedure AddEdge(var Edges: JsonArray; SourceId: Text; TargetId: Text; Qty: Text; UoM: Text)
     var
         Edge: JsonObject;
     begin
         Edge.Add('source', SourceId);
         Edge.Add('target', TargetId);
+        if Qty <> '' then
+            Edge.Add('qty', Qty);
+        if UoM <> '' then
+            Edge.Add('uom', UoM);
         Edges.Add(Edge);
     end;
 

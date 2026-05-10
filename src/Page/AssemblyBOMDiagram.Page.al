@@ -78,7 +78,7 @@ page 50101 "Assembly BOM Diagram"
             'open':
                 OpenNodeCard(NodeCode, NodeType);
             'where-used':
-                if not NavigationMgt.OpenWhereUsed(NodeCode, NodeType) then
+                if not NavigationMgt.OpenWhereUsed(NodeCode, NodeType, 'assembly') then
                     Message(NoTargetLbl);
             else
                 Message(UnknownActionLbl, ActionCode);

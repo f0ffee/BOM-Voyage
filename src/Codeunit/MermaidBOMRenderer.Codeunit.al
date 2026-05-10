@@ -30,7 +30,7 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         end;
 
         NodeCounter := 1;
-        EmitNode(Diagram, 'N1', ProdBOMHeader.Description + '<br/>' + Format(ProdBOMNo), Format(ProdBOMNo), 'root');
+        EmitNode(Diagram, 'N1', ProdBOMHeader.Description, Format(ProdBOMNo), 'root');
         Path.Add(ProdBOMNo);
         TraverseProductionBOM(Diagram, ProdBOMNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
@@ -128,7 +128,7 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         end;
 
         NodeCounter := 1;
-        EmitNode(Diagram, 'N1', Item.Description + '<br/>' + Format(ItemNo), Format(ItemNo), 'root');
+        EmitNode(Diagram, 'N1', Item.Description, Format(ItemNo), 'root');
         Path.Add(ItemNo);
         TraverseAssemblyBOM(Diagram, ItemNo, 'N1', NodeCounter, 0, Path);
         Path.RemoveAt(Path.Count);
@@ -208,28 +208,20 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         exit(StrSubstNo(QtyUomLbl, QtyPer, UoM));
     end;
 
-    /// <summary>
-    /// Emits one node line with inline `style` and a `click` handler bound to the
-    /// global JS bridge `onNodeClick(code, type)`. The inline style form (rather
-    /// than `:::class` shorthand against a top-level classDef block) is used
-    /// because Mermaid 11 does not propagate classDef `color:` through htmlLabels,
-    /// leaving labels white-on-white. Inline `style ID color:...` does propagate.
-    /// Cycle and root nodes do not receive a click handler.
-    /// </summary>
     local procedure EmitNode(var Diagram: TextBuilder; NodeId: Text; NodeLabel: Text; NodeCode: Text; NodeType: Text)
+    var
+        DisplayLabel: Text;
     begin
-        Diagram.AppendLine('    ' + NodeId + '["' + Esc(NodeLabel) + '"]');
+        DisplayLabel := Esc(NodeLabel);
+        if (NodeType = 'root') and (NodeCode <> '') then
+            DisplayLabel := DisplayLabel + '<br>' + Esc(NodeCode);
+
+        Diagram.AppendLine('    ' + NodeId + '["' + DisplayLabel + '"]');
         Diagram.AppendLine('    style ' + NodeId + ' ' + StyleFor(NodeType));
         if (NodeType <> 'root') and (NodeType <> 'cycle') and (NodeCode <> '') then
             Diagram.AppendLine('    click ' + NodeId + ' call onNodeClick("' + EscArg(NodeCode) + '", "' + NodeType + '")');
     end;
 
-    /// <summary>
-    /// Emits an edge with optional label. Uses the `A -- "text" --> B` form
-    /// because Mermaid 11 reliably renders edge labels in this syntax, while
-    /// `A -->|text| B` and `A -->|"text"| B` both have rendering bugs with
-    /// htmlLabels=true (label silently disappears).
-    /// </summary>
     local procedure EmitEdge(var Diagram: TextBuilder; ParentNodeId: Text; ChildNodeId: Text; EdgeLabel: Text)
     begin
         if EdgeLabel = '' then

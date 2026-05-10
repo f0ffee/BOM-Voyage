@@ -36,17 +36,10 @@ codeunit 50103 "BOM Diagram Navigation"
         exit(false);
     end;
 
-    /// <summary>
-    /// Opens the standard BC "Prod. BOM Where-Used" page (99000811) for the
-    /// clicked item. That page handles its own filtering via SetItem and is the
-    /// purpose-built view for this question.
-    ///
-    /// Resources and BOM nodes have no where-used view today; we return false so
-    /// the caller can surface a friendly message instead of opening an empty page.
-    /// </summary>
-    procedure OpenWhereUsed(NodeCode: Text; NodeType: Text): Boolean
+    procedure OpenWhereUsed(NodeCode: Text; NodeType: Text; DiagramContext: Text): Boolean
     var
         Item: Record Item;
+        BOMComp: Record "BOM Component";
         ProdBOMWhereUsed: Page "Prod. BOM Where-Used";
         RecordKey: Code[20];
     begin
@@ -58,8 +51,14 @@ codeunit 50103 "BOM Diagram Navigation"
         case NodeType of
             'item', 'subassembly-item':
                 if Item.Get(RecordKey) then begin
-                    ProdBOMWhereUsed.SetItem(Item, WorkDate());
-                    ProdBOMWhereUsed.Run();
+                    if DiagramContext = 'assembly' then begin
+                        BOMComp.SetRange(Type, BOMComp.Type::Item);
+                        BOMComp.SetRange("No.", RecordKey);
+                        Page.Run(Page::"Where-Used List", BOMComp);
+                    end else begin
+                        ProdBOMWhereUsed.SetItem(Item, WorkDate());
+                        ProdBOMWhereUsed.Run();
+                    end;
                     exit(true);
                 end;
         end;

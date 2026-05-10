@@ -78,7 +78,7 @@ page 50100 "Production BOM Diagram"
             'open':
                 OpenNodeCard(NodeCode, NodeType);
             'where-used':
-                if not NavigationMgt.OpenWhereUsed(NodeCode, NodeType) then
+                if not NavigationMgt.OpenWhereUsed(NodeCode, NodeType, 'production') then
                     Message(NoTargetLbl);
             else
                 Message(UnknownActionLbl, ActionCode);

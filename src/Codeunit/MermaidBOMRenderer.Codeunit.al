@@ -12,8 +12,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
         exit('mermaid');
     end;
 
-    // ─────────────── Production BOM ───────────────
-
     procedure BuildProductionBOMDiagram(ProdBOMNo: Code[20]): Text
     var
         ProdBOMHeader: Record "Production BOM Header";
@@ -120,8 +118,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
             until ProdBOMLine.Next() = 0;
     end;
 
-    // ─────────────── Assembly BOM ─────────────────
-
     procedure BuildAssemblyBOMDiagram(ItemNo: Code[20]): Text
     var
         Item: Record Item;
@@ -209,8 +205,6 @@ codeunit 50102 "Mermaid BOM Renderer" implements "BOM Diagram Renderer"
                 end;
             until BOMComponent.Next() = 0;
     end;
-
-    // ─────────────── Helpers ─────────────────────
 
     local procedure InitMaxDepth()
     var

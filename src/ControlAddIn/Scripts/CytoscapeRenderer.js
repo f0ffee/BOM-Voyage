@@ -6,8 +6,6 @@ var CytoscapeRenderer = (function () {
     var cy = null;
     var onZoomChange = null;
 
-    // ───────── Data mapping ─────────
-
     function buildElements(data) {
         var elements = [];
         (data.nodes || []).forEach(function (n) {
@@ -30,8 +28,6 @@ var CytoscapeRenderer = (function () {
         });
         return elements;
     }
-
-    // ───────── Stylesheet ─────────
 
     // Business Central / Fluent UI color palette
     // Nav blue:  #004578 / #002b50    Communication blue: #0078d4 / #005a9e
@@ -102,8 +98,6 @@ var CytoscapeRenderer = (function () {
         ];
     }
 
-    // ───────── Layout ─────────
-
     function dagreOpts() {
         return {
             name: "dagre", rankDir: "TB", nodeSep: 60, edgeSep: 10, rankSep: 80,
@@ -114,8 +108,6 @@ var CytoscapeRenderer = (function () {
     function runLayout() {
         if (cy) cy.elements(":visible").layout(dagreOpts()).run();
     }
-
-    // ───────── Interactions ─────────
 
     function highlightNode(node) {
         var nbh = node.closedNeighborhood();
@@ -143,8 +135,6 @@ var CytoscapeRenderer = (function () {
         }
         runLayout();
     }
-
-    // ───────── Renderer interface ─────────
 
     return {
         render: function (container, jsonText, zoomCb) {

@@ -86,8 +86,6 @@ var MermaidRenderer = (function () {
         });
     }
 
-    // ───────── Renderer interface ─────────
-
     return {
         render: function (container, mermaidText, zoomCb) {
             onZoomChange = zoomCb;

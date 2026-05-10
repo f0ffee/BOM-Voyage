@@ -5,8 +5,6 @@
 
 var activeRenderer = null;
 
-// ───────────────────────── UI ──────────────────────────
-
 function buildUI(hint) {
     var root = document.getElementById("controlAddIn");
     root.innerHTML = "";
@@ -58,8 +56,6 @@ function updateZoomLabel() {
     var el = document.getElementById("zoom-level");
     if (el && activeRenderer) el.textContent = Math.round(activeRenderer.getZoomLevel() * 100) + " %";
 }
-
-// ─────────────── Public API (called from AL) ────────────
 
 function RenderDiagram(libraryName, diagramData) {
     if (activeRenderer) {
